@@ -1,18 +1,18 @@
 # ecommerce_airflow_db
-Information gathering and saving using airflow
+A data pipeline for information gathering and saving using Apache Airflow.
 
-## Tasks definitions
+## Tasks overview
 
-It is required to gather information about items published in an ecommerce site, save it in a DB and launch alerts if established criteria are met. This pipeline should be implemented in Airflow and run daily.
+This project gathers information about items published on an ecommerce site, saves it in a database, and launches alerts if established criteria are met. The pipeline is implemented using Airflow and runs daily.
 
-Iteraction with the public API is required to collect the data. Here, there is some useful information to proceed:
+The pipeline interacts with the public API to collect data. Here are some useful links:
 - [List of categories](https://api.mercadolibre.com/sites/MLA/categories)
 - [Specific category information](https://api.mercadolibre.com/categories/MLA1577)
 - [Search API for a given category](https://api.mercadolibre.com/sites/MLA/search?category=MLA1577#json)
 - [Specific item information](https://api.mercadolibre.com/items/MLA830173972)
 
 ### Data pipeline creation
-From Mercadolibre site, get the 50 most relevant pusblished items for a particular category, "MLA-MICROWAVES" (category id MLA1577). For each item, it is necessary get the following info:
+The goal is to retrieve the 50 most relevant published items for the category "MLA-MICROWAVES" (category id MLA1577) from Mercadolibre. For each item, the following information is gathered:
 - "id"
 - "site\_id"
 - "title"
@@ -20,25 +20,26 @@ From Mercadolibre site, get the 50 most relevant pusblished items for a particul
 - "sold\_quantity"
 - "thumbnail"
 
-Store all this data with an extra field "created\_date" in a Database. Is is necessary implement the pipeline using Airflow DAG.
+This data is stored in a database with an additional field "created\_date". The pipeline is implemented using an Airflow DAG.
 
-### Send an alert to mail
-Having the previous DAG developed, when any item has earned more than 7.000.000 $ (price x sold\_quantity) when the data gathering task is done, it has to send an email with all the gathered data for every item that reach the previous price.
+### Alert system
+An alert is sent via email if any item has earned more than $7,000,000 (price x sold\_quantity) during the data gathering task. The email contains all the gathered data for each qualifying item.
 
-### Acceptation criteria
-- Pipeline has to accomplish its goals successfully.
-- Code has to be deployable or runs locally.
-- Unit/end to end testing has to be included, applying TDD principles.
-- Inclusion of additional metadata or data lineage information.
-- Put any form of automation.
-- Providing design and documentation.
+### Acceptance criteria
+- The pipeline must successfully accomplish its goals.
+- The code must be deployable or runnable locally.
+- Include unit and end-to-end testing, following TDD principles.
+- Include additional metadata or data lineage information.
+- Incorporate automation wherever possible.
+- Provide clear design and documentation.
 
 
 # Setup
 
 ## Create an .env file
-By the terminal, run this command `vim .env` and making it similar to this example, replacing the values started with "your_" to desired ones:
+Run the following command in your terminal to create an .env file, replacing placeholders with your desired values: `vim .env`
 
+Example of .env file:
 ```
 AIRFLOW_UID=501
 POSTGRES_USER=your_postgres_user
@@ -47,15 +48,22 @@ POSTGRES_DB=your_postgres_db
 AIRFLOW_USER=your_airflow_user
 AIRFLOW_PASSWORD=your_airflow_password
 ```
+## Step-by-step up
+### Start Airflow and Postgres
+Run the following command to start Airflow and Postgres: `make up_airflow`
 
-## Up Airflow and Postgres
-At the terminal, run `make up_airflow` that contains `docker compose up airflow-init` and `docker compose up`. When done, airflow will be up.
+This command includes docker compose up airflow-init and docker compose up.
 
-## Access to Airflow
-Go to the web browser and go to `http://localhost:8080` to login.
+### Access Airflow
+Open your web browser and navigate to http://localhost:8080 to log in.
 
-## Connect to Postgres
-To get the current port that Postgres is allocated, run `docker ps` and check the port. Taking into account the data from the .env file, connect the database.
+### Connect to Postgres
+To find the current port allocated for Postgres, run: `docker ps`
 
-## Down airflow
-At the terminal, cancel the process and run `make down_airflow`.
+Use the information from the .env file to connect to the database. The connection process to Airflow is automated using: `make connect_airflow_to_db`. This runs the bash script `./src/connect_airflow_to_db.sh`.
+
+## Running everything together
+To run Airflow and connect to the database automatically, use: `make up_and_connect`. This runs the `docker compose up` commands in detached mode.
+
+## Shut down Airflow
+To stop Airflow, cancel the running process and execute: `make down_airflow`.
