@@ -32,3 +32,30 @@ Having the previous DAG developed, when any item has earned more than 7.000.000 
 - Inclusion of additional metadata or data lineage information.
 - Put any form of automation.
 - Providing design and documentation.
+
+
+# Setup
+
+## Create an .env file
+By the terminal, run this command `vim .env` and making it similar to this example, replacing the values started with "your_" to desired ones:
+
+```
+AIRFLOW_UID=501
+POSTGRES_USER=your_postgres_user
+POSTGRES_PASSWORD=your_postgres_password
+POSTGRES_DB=your_postgres_db
+AIRFLOW_USER=your_airflow_user
+AIRFLOW_PASSWORD=your_airflow_password
+```
+
+## Up Airflow and Postgres
+At the terminal, run `make up_airflow` that contains `docker compose up airflow-init` and `docker compose up`. When done, airflow will be up.
+
+## Access to Airflow
+Go to the web browser and go to `http://localhost:8080` to login.
+
+## Connect to Postgres
+To get the current port that Postgres is allocated, run `docker ps` and check the port. Taking into account the data from the .env file, connect the database.
+
+## Down airflow
+At the terminal, cancel the process and run `make down_airflow`.
