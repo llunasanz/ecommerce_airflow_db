@@ -7,10 +7,17 @@ AIRFLOW_HEALTH_URL="http://localhost:8080/health"
 # Function to check if Airflow is up
 is_airflow_up() {
     local response=$(docker exec $AIRFLOW_CONTAINER_NAME curl -s "$AIRFLOW_HEALTH_URL")
+    
+    # Check if the response is empty
+    if [ -z "$response" ]; then
+        echo "Empty response from Airflow health endpoint."
+        return 1
+    fi
+
     echo "Response from Airflow health endpoint: $response"
     
-    local metadatabase_status=$(echo "$response" | python3 -c "import sys, json; print(json.load(sys.stdin)['metadatabase']['status'])")
-    local scheduler_status=$(echo "$response" | python3 -c "import sys, json; print(json.load(sys.stdin)['scheduler']['status'])")
+    local metadatabase_status=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('metadatabase', {}).get('status', ''))")
+    local scheduler_status=$(echo "$response" | python3 -c "import sys, json; data = json.load(sys.stdin); print(data.get('scheduler', {}).get('status', ''))")
 
     echo "Metadatabase status: $metadatabase_status"
     echo "Scheduler status: $scheduler_status"
@@ -25,5 +32,7 @@ while ! is_airflow_up; do
     sleep 5
 done
 
-echo "Airflow is up and running."
+# Sleep just in case
+sleep 5
 
+echo "Airflow is up and running."
