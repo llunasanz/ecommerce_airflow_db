@@ -9,6 +9,7 @@ The pipeline interacts with the public API to collect data. Here are some useful
 - [List of categories](https://api.mercadolibre.com/sites/MLA/categories)
 - [Specific category information](https://api.mercadolibre.com/categories/MLA1577)
 - [Search API for a given category](https://api.mercadolibre.com/sites/MLA/search?category=MLA1577#json)
+    - `curl -i -H "Accept: application/json" "https://api.mercadolibre.com/sites/MLA/search?category=MLA1577#json"`
 - [Specific item information](https://api.mercadolibre.com/items/MLA830173972)
 
 ### Data pipeline creation
@@ -42,11 +43,13 @@ Run the following command in your terminal to create an .env file, replacing pla
 Example of .env file:
 ```
 AIRFLOW_UID=501
-POSTGRES_USER=your_postgres_user
-POSTGRES_PASSWORD=your_postgres_password
-POSTGRES_DB=your_postgres_db
 AIRFLOW_USER=your_airflow_user
-AIRFLOW_PASSWORD=your_airflow_password
+AIRFLOW_PASSWORD=our_airflow_password
+POSTGRES_USER=your_postgres_user
+POSTGRES_PASSWORD=your_postgres_user_password
+POSTGRES_DB=your_postgres_db
+POSTGRES_HOST=localhost
+POSTGRES_HOST_CONN=postgres
 ```
 ## Step-by-step up
 ### Start Airflow and Postgres
@@ -63,7 +66,7 @@ To find the current port allocated for Postgres, run: `docker ps`
 Use the information from the .env file to connect to the database. The connection process to Airflow is automated using: `make connect_airflow_to_db`. This runs the bash script `./src/connect_airflow_to_db.sh`.
 
 ## Running everything together
-To run Airflow and connect to the database automatically, use: `make up_and_connect`. This runs the `docker compose up` commands in detached mode.
+To run Airflow and connect to the database automatically, use: `make up_and_connect`. This runs the `docker compose up` commands in detached mode and runs the sh that make the Postgres conneciton when Airflow is up.
 
 ## Shut down Airflow
 To stop Airflow, cancel the running process and execute: `make down_airflow`.
