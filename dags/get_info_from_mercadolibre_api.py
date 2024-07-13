@@ -29,3 +29,4 @@ def get_most_relevant_items_from_category(category: str):
     new_json_str = json.dumps(new_json_list, indent=4)
 
     print(new_json_str)
+
