@@ -3,6 +3,7 @@ from airflow.utils.decorators import apply_defaults
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 import json
 import os
+import logging
 
 class PostgresFileOperator(BaseOperator):
 
@@ -26,8 +27,22 @@ class PostgresFileOperator(BaseOperator):
             pass
 
     def write_in_postgres_table(self):
-        # Implement your write logic here
-        self.postgres_hook.bulk_load(self.config.get('table_name'), '<your_csv_file_path>')
+        table_name = self.config.get('table_name')
+        file_path = '/opt/airflow/dags/output.tsv'
+
+        logging.info(f"Starting bulk load into table {table_name} from file {file_path}")
+        
+        if not os.path.exists(file_path):
+            logging.error(f"File {file_path} does not exist.")
+            raise FileNotFoundError(f"File {file_path} does not exist.")
+        
+        # Assuming the file is tab-separated, bulk load the data
+        try:
+            self.postgres_hook.bulk_load(table_name, file_path)
+            logging.info(f"Bulk load into table {table_name} completed successfully.")
+        except Exception as e:
+            logging.error(f"Bulk load failed: {str(e)}")
+            raise
 
     def load_env_file(self, filepath):
         with open(filepath) as f:

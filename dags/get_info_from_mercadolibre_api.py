@@ -1,5 +1,6 @@
 import requests
 import json
+import csv
 
 # Keys to extract and their default values
 keys_to_extract = {
@@ -29,9 +30,10 @@ def get_most_relevant_items_from_category(category: str, output_file_path = 'out
     new_json_str = json.dumps(new_json_list, indent=4)
 
     with open(output_file_path, 'w', newline='') as output_file:
-    dict_writer = csv.DictWriter(output_file, fieldnames=keys, delimiter='\t')
-    dict_writer.writeheader()
-    dict_writer.writerows(new_json_list)
+        dict_writer = csv.DictWriter(output_file, fieldnames=keys_to_extract, delimiter='\t')
+        dict_writer.writeheader()
+        dict_writer.writerows(new_json_list)
 
     print(new_json_str)
 
+#get_most_relevant_items_from_category("MLA1577")
