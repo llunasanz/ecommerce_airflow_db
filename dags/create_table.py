@@ -5,6 +5,7 @@ from airflow.utils.dates import days_ago
 from datetime import timedelta
 import logging
 import os
+from operators.PostgresFileOperator import PostgresFileOperator  # Correctly import the class
 
 # Define default arguments
 default_args = {
@@ -33,11 +34,10 @@ with DAG(
     log_task = PythonOperator(
         task_id='log_status',
         python_callable=log_status,
-        provide_context=True,
     )
 
     create_table_task = PostgresOperator(
-        task_id="crear_tabla_postgres",
+        task_id="create_table_postgres",
         postgres_conn_id="my_prod_db",
         sql="""
             CREATE TABLE IF NOT EXISTS mercadolibre_items (
@@ -52,4 +52,10 @@ with DAG(
         """
     )
 
-    log_task >> create_table_task
+    insert_data_task = PostgresFileOperator(
+        task_id="insert_data_postgres",
+        operation="write",
+        config={"table_name": "mercadolibre_items"}
+    )
+
+    log_task >> create_table_task >> insert_data_task

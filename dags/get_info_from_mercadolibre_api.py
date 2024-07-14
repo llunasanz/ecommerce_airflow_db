@@ -14,7 +14,7 @@ def get_value_from_item_key(item, key):
     return item.get(key, None)
 
 # Category format: MLA0123 (string)
-def get_most_relevant_items_from_category(category: str):
+def get_most_relevant_items_from_category(category: str, output_file_path = 'output.tsv'):
     url = f"https://api.mercadolibre.com/sites/MLA/search?category={category}#json"
     response = requests.get(url).text
     response_json = json.loads(response)
@@ -27,6 +27,11 @@ def get_most_relevant_items_from_category(category: str):
     ]
 
     new_json_str = json.dumps(new_json_list, indent=4)
+
+    with open(output_file_path, 'w', newline='') as output_file:
+    dict_writer = csv.DictWriter(output_file, fieldnames=keys, delimiter='\t')
+    dict_writer.writeheader()
+    dict_writer.writerows(new_json_list)
 
     print(new_json_str)
 
