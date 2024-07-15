@@ -28,7 +28,7 @@ class PostgresFileOperator(BaseOperator):
 
     def write_in_postgres_table(self):
         table_name = self.config.get('table_name')
-        file_path = '/opt/airflow/dags/output.tsv'
+        file_path = '/opt/airflow/output.tsv'
 
         logging.info(f"Starting bulk load into table {table_name} from file {file_path}")
         
