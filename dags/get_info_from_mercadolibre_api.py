@@ -24,7 +24,7 @@ def get_most_relevant_items_from_category(category: str, output_file_path = '/op
     response_json = json.loads(response)
     data = response_json["results"]
 
-    current_datetime = datetime.now().isoformat()
+    current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     # Create a list of new JSON objects with only the required fields
     new_json_list = [
